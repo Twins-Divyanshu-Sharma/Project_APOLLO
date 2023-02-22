@@ -303,24 +303,21 @@ Mat::Mat(int row_,int col_)
     this->col_ = col_;
 
     data = new float*[row_];
-    for(int i=0; i<row_; i++)
-    {
-        data[i] = new float[col_];
-    }
+
+    data[0] = new float[row_ * col_];
+
+    for(int i=1; i<row_; i++)
+        data[i] = data[i-1] + col_;
 
     for(int i=0; i<row_; i++)
-    {
         for(int j=0; j<col_; j++)
-        {
             data[i][j] = 0;
-        }
-    }
+
 }
 
 Mat::~Mat()
 {
-    for(int i=0; i<row_; i++)
-        delete [] data[i];
+    delete [] data[0];
 
     delete [] data;
 }
@@ -328,17 +325,19 @@ Mat::~Mat()
 
 Mat::Mat(const Mat& mat)
 {
-    this->row_ = mat.row_;
-    this->col_ = mat.col_;
+
+    row_ = mat.row_;
+    col_ = mat.col_;
 
     data = new float*[row_];
-    for(int i=0; i<row_; i++)
-        data[i] = new float[col_];
+    data[0] = new float[row_ * col_];
+
+    for(int i=1; i<row_; i++)
+        data[i] = data[i-1] + col_;
 
     for(int i=0; i<row_; i++)
         for(int j=0; j<col_; j++)
             data[i][j] = mat.data[i][j];
-
 }
 
 Mat::Mat(Mat&& mat)
@@ -347,6 +346,67 @@ Mat::Mat(Mat&& mat)
     data = mat.data;   
     mat.data = nullptr;
 }
+
+int Mat::row()
+{
+    return row_;
+}
+
+int Mat::col()
+{
+    return col_;
+}
+
+
+Mat& Mat::operator=(Mat& m)
+{
+    
+    if((row_!=m.row_ || col_!=m.col_))
+    {
+        if(data != nullptr)
+        {
+           delete [] data[0];
+           delete [] data;
+        }
+        
+        row_ = m.row_;
+        col_ = m.col_;
+
+        data = new float*[row_];
+        data[0] = new float[row_ * col_];
+
+        for(int i=1; i<row_; i++)
+            data[i] = data[i-1] + col_;
+
+    }
+    
+    for(int i=0; i<m.row_; i++)
+        for(int j=0; j<m.col_; j++)
+            data[i][j] = m.data[i][j];
+
+
+    return *this;
+}
+
+Mat& Mat::operator=(Mat&& m)
+{
+    row_ = m.row_;
+    col_ = m.col_;
+
+    std::move(m.data[0], m.data[0] + row_ * col_, data[0]);
+
+
+    return *this;
+}
+
+float* Mat::operator[](int i)
+{
+    if(i<row_ && i>=0)
+        return data[i];
+   else
+        std::cerr<<"out of bounds exception for row no "<<i<<std::endl;
+}
+
 
 Vec operator*(Mat& mat, Vec& vec)
 {
@@ -414,75 +474,6 @@ Vec operator*(Mat&& mat, Vec&& vec)
         std::cerr << "Matrix and Vector size is not compatible" << std::endl;
         return Vec(0);
     }
-}
-
-
-
-int Mat::row()
-{
-    return row_;
-}
-
-int Mat::col()
-{
-    return col_;
-}
-
-void Mat::getDimension(int& r, int& c)
-{
-    r = row_;    c = col_;
-}
-
-Mat& Mat::operator=(Mat& m)
-{
-    
-    if((row_!=m.row_ || col_!=m.col_))
-    {
-        if(data != nullptr)
-        {
-           for(int i=0; i<col_; i++)
-               delete [] data[i];
-           delete [] data;
-        }
-    
-         this->row_ = m.row_;
-        this->col_ = m.col_;
-       data = new float*[row_];
-        for(int i=0; i<row_; i++)
-        {
-            data[i] = new float[col_];
-        }
-     
-    }
-    
-    for(int i=0; i<m.row_; i++)
-        for(int j=0; j<m.col_; j++)
-            data[i][j] = m.data[i][j];
-
-
-    return *this;
-}
-
-Mat& Mat::operator=(Mat&& m)
-{
-    this->row_ = m.row_;
-    this->col_ = m.col_;
-
-    float** temp = this->data;
-    data = m.data;
-    m.data = temp;
-
-
-
-    return *this;
-}
-
-float* Mat::operator[](int i)
-{
-    if(i<row_ && i>=0)
-        return data[i];
-   else
-        std::cerr<<"out of bounds exception for row no "<<i<<std::endl;
 }
 
 Mat operator*(float f, Mat& mat)

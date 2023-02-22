@@ -21,7 +21,7 @@
 
 int main()
 {
-    MNIST dataset("res/trainImages", "res/trainLabels");  
+/*      MNIST dataset("res/trainImages", "res/trainLabels");  
 
     Vec input(28*28);
     FNN fnn = input + 50/act::sigmoid + 20/act::sigmoid + 10/act::softmax;
@@ -34,5 +34,15 @@ int main()
    
 
     return 0;
+    */
+
+    Mat a(2,3);
+
+    a[0][0] = 1;    a[0][1] = 2;    a[0][2] = 2;
+    a[1][0] = 2;    a[1][1] = 1;    a[1][2] = 1;
+
+    Mat b = std::move(a);
+
+    std::cout << b ;
 }
 

@@ -66,7 +66,6 @@ class Mat
         ~Mat();
         int row();
         int col();
-        void getDimension(int& r, int& c);
 
         Mat& operator=(Mat&);
         Mat& operator=(Mat&&);
