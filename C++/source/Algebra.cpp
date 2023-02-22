@@ -23,9 +23,8 @@ Vec::Vec()
     data = nullptr;
 }
 
-Vec::Vec(int size_)
+Vec::Vec(int size_) : size_(size_)
 {
-    this->size_ = size_;
     data = new float[size_];
     for(int i=0; i<size_; i++)
         data[i] = 0;
@@ -36,17 +35,15 @@ Vec::~Vec()
     delete [] data;
 }
 
-Vec::Vec(const Vec& vec)
+Vec::Vec(const Vec& vec) : size_(vec.size_)
 {
-    size_ = vec.size_;
     data = new float[size_];
     for(int i=0; i<size_; i++)
         data[i] = vec.data[i]; 
 }
 
-Vec::Vec(Vec&& vec)
+Vec::Vec(Vec&& vec) : size_(vec.size_)
 {
-    size_ = vec.size_;
     data = vec.data;
     vec.data = nullptr;   
 }
@@ -297,10 +294,8 @@ Mat::Mat()
     data = nullptr;
 }
 
-Mat::Mat(int row_,int col_)
+Mat::Mat(int row_,int col_) : row_(row_), col_(col_)
 {
-    this->row_ = row_;
-    this->col_ = col_;
 
     data = new float*[row_];
 
@@ -323,11 +318,8 @@ Mat::~Mat()
 }
 
 
-Mat::Mat(const Mat& mat)
+Mat::Mat(const Mat& mat) : row_(mat.row_), col_(mat.col_)
 {
-
-    row_ = mat.row_;
-    col_ = mat.col_;
 
     data = new float*[row_];
     data[0] = new float[row_ * col_];
@@ -340,9 +332,9 @@ Mat::Mat(const Mat& mat)
             data[i][j] = mat.data[i][j];
 }
 
-Mat::Mat(Mat&& mat)
+Mat::Mat(Mat&& mat) : row_(mat.row_), col_(mat.col_)
 {
-    row_ = mat.row_;    col_ = mat.col_; 
+
     data = mat.data;   
     mat.data = nullptr;
 }

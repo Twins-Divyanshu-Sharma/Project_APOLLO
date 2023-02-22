@@ -41,8 +41,10 @@ int main()
     a[0][0] = 1;    a[0][1] = 2;    a[0][2] = 2;
     a[1][0] = 2;    a[1][1] = 1;    a[1][2] = 1;
 
-    Mat b = std::move(a);
+    Mat b(a);
 
-    std::cout << b ;
+    Mat c = 10 * b;
+
+    std::cout << b << c;
 }
 
